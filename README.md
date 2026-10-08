@@ -1,4 +1,4 @@
-# CaptionPop 🌸✨
+# CopasCaptionPop🌸✨
 
 A cute pink and yellow yups yups **caption & hashtag generator**.
 Enter a topic or a photo description, pick a platform (Instagram, LinkedIn, or X), and get **3 caption options with hashtags** as JSON. No API key, no internet, just a local (traditional) AI model `model.pkl` LMAO.
