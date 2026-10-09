@@ -1,10 +1,45 @@
-const state = { mode: "topik", platform: "Instagram" };
+const state = { mode: "topic", platform: "Instagram", lang: "auto" };
 const $ = (id) => document.getElementById(id);
 const input = $("input");
 const results = $("results");
 const note = $("note");
 const button = $("generate");
-const EMOJIS = ["🎉", "🌷", "⚡"];
+
+const BADGE_ICONS = ["fa-solid fa-face-laugh-beam", "fa-solid fa-heart", "fa-solid fa-bolt"];
+const LANGUAGE_NAMES = { id: "Indonesian", en: "English" };
+const INPUT_COPY = {
+  topic: {
+    icon: "fa-solid fa-comment-dots",
+    label: "What is your topic?",
+    placeholder: "e.g. Launching our new brown sugar latte at the cafe"
+  },
+  photo: {
+    icon: "fa-solid fa-image",
+    label: "Describe your photo",
+    placeholder: "e.g. Selfie at the beach during sunset, wearing a straw hat and a big smile"
+  }
+};
+
+function setContent(element, iconClass, text) {
+  const icon = document.createElement("i");
+  icon.className = iconClass;
+  element.replaceChildren(icon, document.createTextNode(text));
+}
+
+function labeled(element, iconClass, text) {
+  element.dataset.icon = iconClass;
+  element.dataset.text = text;
+  setContent(element, iconClass, text);
+}
+
+function flash(target, success) {
+  setContent(
+    target,
+    success ? "fa-solid fa-check" : "fa-solid fa-triangle-exclamation",
+    success ? "Copied!" : "Failed"
+  );
+  setTimeout(() => setContent(target, target.dataset.icon, target.dataset.text), 1400);
+}
 
 function bindChips(containerId, key, onChange) {
   const box = $(containerId);
@@ -19,13 +54,12 @@ function bindChips(containerId, key, onChange) {
 }
 
 bindChips("modes", "mode", () => {
-  const isPhoto = state.mode === "foto";
-  $("inputLabel").textContent = isPhoto ? "Deskripsiin fotonya ya" : "Ceritain topiknya dong";
-  input.placeholder = isPhoto
-    ? "Contoh: Foto selfie di pantai saat sunset, pakai topi jerami dan senyum lebar"
-    : "Contoh: Launching kopi susu gula aren di kafe baru kami";
+  const copy = INPUT_COPY[state.mode];
+  setContent($("inputLabel"), copy.icon, copy.label);
+  input.placeholder = copy.placeholder;
 });
 bindChips("platforms", "platform");
+bindChips("languages", "lang");
 
 async function copyText(text) {
   try {
@@ -44,15 +78,8 @@ async function copyText(text) {
   }
 }
 
-function flash(target, label) {
-  const original = target.dataset.label || target.textContent;
-  target.dataset.label = original;
-  target.textContent = label;
-  setTimeout(() => { target.textContent = original; }, 1400);
-}
-
 function showLoading() {
-  results.innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div>Lagi masak caption kece... 🍳</div>';
+  results.innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div>Cooking up cute captions...</div>';
 }
 
 function render(data) {
@@ -60,7 +87,11 @@ function render(data) {
 
   const detected = document.createElement("div");
   detected.className = "detected";
-  detected.textContent = `Terdeteksi: ${data.category} (${Math.round(data.confidence * 100)}%)`;
+  setContent(
+    detected,
+    "fa-solid fa-brain",
+    `Detected: ${data.category} (${Math.round(data.confidence * 100)}%) · ${LANGUAGE_NAMES[data.language]}`
+  );
   results.appendChild(detected);
 
   data.options.forEach((option) => {
@@ -72,13 +103,11 @@ function render(data) {
     top.className = "card-top";
     const badge = document.createElement("span");
     badge.className = "badge";
-    badge.textContent = `${EMOJIS[option.id - 1]} ${option.style}`;
+    setContent(badge, BADGE_ICONS[option.id - 1], option.style);
     const copy = document.createElement("button");
     copy.className = "copy";
-    copy.textContent = "Salin";
-    copy.addEventListener("click", async () => {
-      flash(copy, (await copyText(full)) ? "Tersalin!" : " Gagal");
-    });
+    labeled(copy, "fa-solid fa-copy", "Copy");
+    copy.addEventListener("click", async () => flash(copy, await copyText(full)));
     top.append(badge, copy);
 
     const caption = document.createElement("p");
@@ -99,7 +128,7 @@ function render(data) {
     if (data.platform === "X") {
       const meta = document.createElement("div");
       meta.className = "meta" + (full.length > 280 ? " over" : "");
-      meta.textContent = `${full.length}/280 karakter`;
+      meta.textContent = `${full.length}/280 characters`;
       card.appendChild(meta);
     }
     results.appendChild(card);
@@ -109,10 +138,10 @@ function render(data) {
   bar.className = "json-bar";
   const toggle = document.createElement("button");
   toggle.className = "chip";
-  toggle.textContent = "{ } Lihat JSON";
+  labeled(toggle, "fa-solid fa-code", "View JSON");
   const copyJson = document.createElement("button");
   copyJson.className = "chip";
-  copyJson.textContent = " Salin JSON";
+  labeled(copyJson, "fa-solid fa-copy", "Copy JSON");
   bar.append(toggle, copyJson);
 
   const pre = document.createElement("pre");
@@ -121,9 +150,7 @@ function render(data) {
   pre.textContent = json;
 
   toggle.addEventListener("click", () => pre.classList.toggle("hidden"));
-  copyJson.addEventListener("click", async () => {
-    flash(copyJson, (await copyText(json)) ? " Tersalin!" : " Gagal");
-  });
+  copyJson.addEventListener("click", async () => flash(copyJson, await copyText(json)));
   results.append(bar, pre);
 }
 
@@ -131,27 +158,27 @@ async function generate() {
   const topic = input.value.trim();
   note.textContent = "";
   if (topic.length < 4) {
-    note.textContent = "Isi dulu dong, minimal beberapa kata";
+    note.textContent = "Please write a few words first.";
     input.focus();
     return;
   }
   button.disabled = true;
-  button.textContent = " Sebentar ya...";
+  setContent(button, "fa-solid fa-spinner fa-spin", "Hold on...");
   showLoading();
   try {
     const response = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ topic, platform: state.platform, mode: state.mode })
+      body: JSON.stringify({ topic, platform: state.platform, mode: state.mode, lang: state.lang })
     });
     if (!response.ok) throw new Error("bad response");
     render(await response.json());
   } catch (error) {
     results.innerHTML = "";
-    note.textContent = "Server lokal belum jalan atau error. Cek terminal.";
+    note.textContent = "Local server is not running or returned an error. Check your terminal.";
   } finally {
     button.disabled = false;
-    button.textContent = " Generate 3 Opsi!";
+    setContent(button, "fa-solid fa-wand-magic-sparkles", "Generate 3 Options!");
   }
 }
 

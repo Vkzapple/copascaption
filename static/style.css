@@ -203,3 +203,10 @@ pre {
 }
 .hidden { display: none; }
 footer { text-align: center; margin-top: 30px; color: var(--muted); font-size: 13px; }
+.hint { margin: 6px 2px 0; font-size: 13px; color: var(--muted); }
+.label i { margin-right: 8px; color: var(--pink-deep); }
+.chip i, .go i, .copy i, .badge i, .detected i, .hint i { margin-right: 6px; }
+.chip.active i { color: var(--pink-deep); }
+.hint i { color: var(--pink-deep); }
+.float:nth-child(1), .float:nth-child(4) { color: var(--pink); }
+.float:nth-child(2), .float:nth-child(3) { color: #ffbe3d; }

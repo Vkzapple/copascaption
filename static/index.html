@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CopasCaption Generator Caption & Hashtag</title>
-<link rel="stylesheet" href="style.css"></head>
+<title>Copas Caption & Hashtag Generator</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23ff6fae'/%3E%3Cpolygon points='16,4.5 19.5,12 27.5,12.9 21.5,18.4 23.2,26.5 16,22.4 8.8,26.5 10.5,18.4 4.5,12.9 12.5,12' fill='%23ffd93d'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
 <body>
-<span class="float">🌸</span>
-<span class="float">⭐</span>
-<span class="float">🍯</span>
-<span class="float">💖</span>
+<i class="float fa-solid fa-heart" aria-hidden="true"></i>
+<i class="float fa-solid fa-star" aria-hidden="true"></i>
+<i class="float fa-solid fa-cloud" aria-hidden="true"></i>
+<i class="float fa-solid fa-spa" aria-hidden="true"></i>
 
 <main>
   <header>
@@ -23,34 +26,44 @@
       <circle cx="72" cy="64" r="7" fill="#ff6fae" opacity="0.6"/>
       <path d="M42 66 Q50 76 58 66" fill="none" stroke="#4a1d3a" stroke-width="4" stroke-linecap="round"/>
     </svg>
-    <h1>Copy-Paste<span>Caption</span></h1>
-    <p>Bikin caption & hashtag kece, 100% offline!</p>
+    <h1>Copas<span>Caption</span></h1>
+    <p>Cute captions & hashtags, 100% offline!</p>
   </header>
 
   <section class="panel">
     <div class="group">
-      <span class="label">Mau mulai dari apa?</span>
+      <span class="label"><i class="fa-solid fa-wand-magic-sparkles"></i>Where do we start?</span>
       <div class="chips" id="modes">
-        <button class="chip active" data-value="topik">Topik</button>
-        <button class="chip" data-value="foto">Deskripsi Foto</button>
+        <button class="chip active" data-value="topic"><i class="fa-solid fa-pen"></i>Topic</button>
+        <button class="chip" data-value="photo"><i class="fa-solid fa-camera"></i>Photo Description</button>
       </div>
     </div>
 
     <div class="group">
-      <label class="label" for="input" id="inputLabel">Ceritain topiknya dong!</label>
-      <textarea id="input" maxlength="500" placeholder="Contoh: Launching kopi susu gula aren di kafe baru kami"></textarea>
+      <label class="label" for="input" id="inputLabel"><i class="fa-solid fa-comment-dots"></i>What is your topic?</label>
+      <textarea id="input" maxlength="500" placeholder="e.g. Launching our new brown sugar latte at the cafe"></textarea>
+      <p class="hint"><i class="fa-solid fa-circle-info"></i>Tip: works in English and Indonesian.</p>
     </div>
 
     <div class="group">
-      <span class="label">Posting di mana?</span>
+      <span class="label"><i class="fa-solid fa-mobile-screen"></i>Where will you post?</span>
       <div class="chips" id="platforms">
-        <button class="chip active" data-value="Instagram">📷 Instagram</button>
-        <button class="chip" data-value="LinkedIn">💼 LinkedIn</button>
-        <button class="chip" data-value="X">🐦 X</button>
+        <button class="chip active" data-value="Instagram"><i class="fa-brands fa-instagram"></i>Instagram</button>
+        <button class="chip" data-value="LinkedIn"><i class="fa-brands fa-linkedin"></i>LinkedIn</button>
+        <button class="chip" data-value="X"><i class="fa-brands fa-x-twitter"></i>X</button>
       </div>
     </div>
 
-    <button class="go" id="generate"> Generate 3 Opsi!</button>
+    <div class="group">
+      <span class="label"><i class="fa-solid fa-globe"></i>Caption language</span>
+      <div class="chips" id="languages">
+        <button class="chip active" data-value="auto"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto</button>
+        <button class="chip" data-value="en"><i class="fa-solid fa-language"></i>English</button>
+        <button class="chip" data-value="id"><i class="fa-solid fa-language"></i>Indonesian</button>
+      </div>
+    </div>
+
+    <button class="go" id="generate"><i class="fa-solid fa-wand-magic-sparkles"></i>Generate 3 Options!</button>
     <p class="note" id="note"></p>
   </section>
 
@@ -59,6 +72,6 @@
   <footer>Made by evellkz</footer>
 </main>
 
-<script src="scripts.js"></script>
+<script src="/static/scripts.js"></script>
 </body>
 </html>
